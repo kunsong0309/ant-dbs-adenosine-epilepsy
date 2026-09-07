@@ -70,7 +70,7 @@ var_info = cell2table({ ...
     'spk_frequency', 'IED (per hour)', 'IED Frequency'; ...
     }, 'VariableNames', {'field', 'ylabel', 'title'});
 
-grp_ls = [3, 4];
+grp_ls = [5, 6];
 nvar = size(var_info, 1);
 for vv = 1:nvar
     vmat = arrayfun(@(x)(x.(var_info.field{vv})), stats, 'UniformOutput', false);
@@ -91,7 +91,6 @@ for vv = 1:nvar
     arrayExportStats(vmat, {'value'}, grp_name(grp_ls), vname, ...
         fullfile(out_dir, [fig_name, '_', var_name, '.xlsx']));
 end
-
 
 
 
