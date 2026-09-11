@@ -15,80 +15,48 @@ im_fun = @(f, h1, h2, w1, w2)(cat(3, ...
 %% set threshold according slice distribution
 for nn = 1:ns
     isin = unique(ds(nn).tile_idx);
-
-    % D1: 1 (g1())
-    % dx = mean(ds(nn).chan_dist.gfap_th(isin, :), 1);
-    % X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), 
-    % 2:nv, 'UniformOutput', false);
-
-    % D1: 50 (g3(m+2sd)); D2: 25 (g3(m-2sd))
+    
     dx = mean(ds(nn).chan_dist.gfap_filt(isin, :), 1);
     X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), ...
-        22:nv, 'UniformOutput', false);
+        1:nv, 'UniformOutput', false);
     X = cat(1, X{:});
-    ds(nn).gfap_thr = 2 ^ (median(X) + mad(X, 1) * 1.4826 * 1) - 1;
+    ds(nn).gfap_thr = 2 ^ prctile(X, 95) - 1;
     
-    % D1: 0, D2: m+1sd
     dx = mean(ds(nn).chan_dist.nt5c2_filt(isin, :), 1);
     X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), ...
-        2:nv, 'UniformOutput', false);
+        1:nv, 'UniformOutput', false);
     X = cat(1, X{:});
-    ds(nn).nt5c2_log2_m = median(X);
-    ds(nn).nt5c2_log2_sd = mad(X, 1) * 1.4826;
-    ds(nn).nt5c2_thr = 2 ^ (median(X) + mad(X, 1) * 1.4826 * 1) - 1;
+    ds(nn).nt5c2_thr = 2 ^ prctile(X, 95) - 1;
 
-    % D1: 0, D2: m+1sd
     dx = mean(ds(nn).chan_dist.adora1_filt(isin, :), 1);
     X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), ...
-        2:nv, 'UniformOutput', false);
+        1:nv, 'UniformOutput', false);
     X = cat(1, X{:});
-    ds(nn).adora1_log2_m = median(X);
-    ds(nn).adora1_log2_sd = mad(X, 1) * 1.4826;
-    ds(nn).adora1_thr = 2 ^ (median(X) + mad(X, 1) * 1.4826 * 1) - 1;
+    ds(nn).adora1_thr = 2 ^ prctile(X, 95) - 1;
 
-    % D1: 1, D2: m+5sd, D3: gm2 (dmin), D4: 10
     dx = mean(ds(nn).chan_dist.adk_filt(isin, :), 1);
     X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), ...
-        2:nv, 'UniformOutput', false);
+        1:nv, 'UniformOutput', false);
     X = cat(1, X{:});
-    rng(6535)
-    gm = fitgmdist(X, 2);
-    [mu, oo] = sort(gm.mu); %mu'
-    sigma = gm.Sigma(oo);
-    gx = (mu(1):0.05:mu(2))';
-    gy = pdf(gm, gx);
-    [~, idx] = min(gy);
-    % ds(nn).adk_thr = 2 ^ (gx(idx)) - 1;
-    ds(nn).adk_thr = 10;
-    % ds(nn).adk_thr = 2 ^ (median(X) + mad(X, 1) * 1.4826 * 3) - 1;
-    X = X(X > ds(nn).adk_thr);
-    ds(nn).adk_log2_m = median(X);
-    ds(nn).adk_log2_sd = mad(X, 1) * 1.4826;
+    ds(nn).adk_thr = 2 ^ prctile(X, 95) - 1;
 
-    % D1: 2, D2: m+1sd, D3: 2gm, m+1sd
     dx = mean(ds(nn).chan_dist.ppat_filt(isin, :), 1);
     X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), ...
-        2:nv, 'UniformOutput', false);
+        1:nv, 'UniformOutput', false);
     X = cat(1, X{:});
-    ds(nn).ppat_thr = 2 ^ (median(X) + mad(X, 1) * 1.4826 * 1) - 1;    
-    ds(nn).ppat_log2_m = median(X);
-    ds(nn).ppat_log2_sd = mad(X, 1) * 1.4826;
+    ds(nn).ppat_thr = 2 ^ prctile(X, 95) - 1;
 
-    % D1: 0, D2: m+2sd, D3: m+1sd
     dx = mean(ds(nn).chan_dist.cd73_filt(isin, :), 1);
     X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), ...
-        2:nv, 'UniformOutput', false);
+        1:nv, 'UniformOutput', false);
     X = cat(1, X{:});
-    ds(nn).cd73_log2_m = median(X);
-    ds(nn).cd73_log2_sd = mad(X, 1) * 1.4826;
-    ds(nn).cd73_thr = 2 ^ (median(X) + mad(X, 1) * 1.4826 * 1) - 1;
+    ds(nn).cd73_thr = 2 ^ prctile(X, 95) - 1;
 
-    % D1: m+1sd
     dx = mean(ds(nn).chan_dist.gfap_th(isin, :), 1);
     X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), ...
-        2:nv, 'UniformOutput', false);
+        1:nv, 'UniformOutput', false);
     X = cat(1, X{:});
-    ds(nn).gfap_th_thr = 2 ^ (median(X) + mad(X, 1) * 1.4826 * 1) - 1;
+    ds(nn).gfap_th_thr = 2 ^ prctile(X, 95) - 1;
 
     % rng(6535)
     % gm = fitgmdist(X, 2);
@@ -107,21 +75,6 @@ for nn = 1:ns
     % figure; histogram(X, vx_log2);
     % xline(mu(2) + sigma(2) * 1, ':r');
     % xline(median(X) + mad(X, 1) * 1.4826 * 1, ':m');
-end
-
-%% set 95th-perc threshold
-adora1_thr = [4.58, 4.39, 4.16, 4.00, 4.40, 3.04, 4.57, 3.85, 4.06];
-cd73_thr = [5.35, 5.20, 4.55, 5.35, 5.40, 5.10, 4.15, 4.85, 5.40]; 
-ppat_thr = [4.95, 4.88, 4.6, 5.4, 4.9, 5.05, 4.13, 4.4, 5.7];
-nt5c2_thr = [3.8, 4.40, 3.3, 6.2, 4.80, 4.4, 5.35, 4.25, 3.65];
-adk_thr = [0.53, 5.8, 0.43, 5.12, 6, 1.14, 6.34, 5.55, 0.65];
-
-for nn = 1:ns
-    ds(nn).adora1_thr = 2^adora1_thr(nn)-1;
-    ds(nn).cd73_thr = 2^cd73_thr(nn)-1;
-    ds(nn).ppat_thr = 2^ppat_thr(nn)-1;
-    ds(nn).nt5c2_thr = 2^nt5c2_thr(nn)-1;
-    ds(nn).adk_thr = 2^adk_thr(nn)-1;
 end
 
 %% metrics
@@ -197,7 +150,6 @@ for nn = 1:ns
     gx = (mu(1):0.05:mu(2))';
     gy = pdf(gm, gx);
     [~, idx] = min(gy);
-    % fprintf('%d %.2f (%.2f), %.2f (%.2f)\n', nn, mu(1)+sigma(1)*5, 2^(mu(1)+sigma(1)*5)-1, gx(idx), 2^(gx(idx))-1);
     thr1 = gx(idx);
 
     gm = fitgmdist(v2(is_dapi & v1 <= thr1 & v2 > 0), 2);
@@ -206,7 +158,6 @@ for nn = 1:ns
     gx = (mu(1):0.05:mu(2))';
     gy = pdf(gm, gx);
     [~, idx] = min(gy);
-    % fprintf('%d %.2f (%.2f), %.2f (%.2f)\n', nn, mu(1)+sigma(1)*5, 2^(mu(1)+sigma(1)*5)-1, gx(idx), 2^(gx(idx))-1);
     thr2 = gx(idx);
 
     X = v1(is_dapi & v1 > thr1 & v2 <= thr2);

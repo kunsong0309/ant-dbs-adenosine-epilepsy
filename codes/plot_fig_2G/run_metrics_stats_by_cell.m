@@ -15,14 +15,6 @@ im_fun = @(f, h1, h2, w1, w2)(cat(3, ...
 for nn = 1:ns
     isin = unique(ds(nn).tile_idx);
 
-    % % D1: 2gm(c2, m+1sd), D2: m+1sd
-    % dx = mean(ds(nn).chan_dist.neun_filt(isin, :), 1);
-    % X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), ...
-    %     2:nv, 'UniformOutput', false);
-    % X = cat(1, X{:});
-    % ds(nn).neun_thr = 2 ^ (median(X) + mad(X, 1) * 1.4826 * 1) - 1;
-
-    % D1: 2gm(c2, m+1sd), D2: m+1sd
     dx = mean(ds(nn).chan_dist.adora1_filt(isin, :), 1);
     X = arrayfun(@(x)(ones(round(dx(x)), 1) * vx_log2(x)), ...
         2:nv, 'UniformOutput', false);
